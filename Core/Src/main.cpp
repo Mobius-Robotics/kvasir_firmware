@@ -123,7 +123,7 @@ int main(void) {
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 
-	robot.init();
+	robot.init(&huart1, &hcom_uart[COM1], &hi2c1);
 	HAL_TIM_Base_Start_IT(&htim2);
 
 	while (1) {

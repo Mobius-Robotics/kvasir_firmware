@@ -46,7 +46,7 @@ void Robot::handle_command(void) {
 	uint8_t header;
 
 	// Wait to receive the header byte 'M'
-	if (HAL_UART_Receive(&hcom_uart[COM1], &header, 1, 100) != HAL_OK)
+	if (HAL_UART_Receive(usb_uart_, &header, 1, 100) != HAL_OK)
 		return;
 	if (header != 'M') {
 		// Invalid header byte; early return
@@ -54,13 +54,13 @@ void Robot::handle_command(void) {
 	}
 
 	uint8_t command;
-	if (HAL_UART_Receive(&hcom_uart[COM1], &command, 1, 100) != HAL_OK)
+	if (HAL_UART_Receive(usb_uart_, &command, 1, 100) != HAL_OK)
 		return;
 
 	switch (command) {
 	case 's': {  // Set servo
 		SetServoCommand cmd;
-		if (HAL_UART_Receive(&hcom_uart[COM1], reinterpret_cast<uint8_t*>(&cmd),
+		if (HAL_UART_Receive(usb_uart_, reinterpret_cast<uint8_t*>(&cmd),
 				sizeof(cmd), 100) != HAL_OK)
 			return;
 		cmd.process();
@@ -73,7 +73,7 @@ void Robot::handle_command(void) {
 	}
 	case 'u': {  // Set wheel speeds
 		SetWheelSpeedsCommand cmd;
-		if (HAL_UART_Receive(&hcom_uart[COM1], reinterpret_cast<uint8_t*>(&cmd),
+		if (HAL_UART_Receive(usb_uart_, reinterpret_cast<uint8_t*>(&cmd),
 				sizeof(cmd), 100) != HAL_OK)
 			return;
 		cmd.process();
@@ -91,7 +91,7 @@ void Robot::handle_command(void) {
 	}
 	case 'k': {  // Set wheel velocities via inverse kinematics
 		InverseKinematicsCommand cmd;
-		if (HAL_UART_Receive(&hcom_uart[COM1], reinterpret_cast<uint8_t*>(&cmd),
+		if (HAL_UART_Receive(usb_uart_, reinterpret_cast<uint8_t*>(&cmd),
 				sizeof(cmd), 100) != HAL_OK)
 			return;
 		cmd.process();
