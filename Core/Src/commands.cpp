@@ -44,7 +44,7 @@ void PongCommand::process() {
 
 inline double rad_per_s_to_vactual(double u) {
 	double v_rps = u / TAU; // revolutions per second
-	double v_steps_per_second = v_rps / FSC / USC; // steps per second
+	double v_steps_per_second = v_rps * FSC * USC; // steps per second
 	double vactual = v_steps_per_second / 0.715; // VACTUAL register, based on internal oscillator
 	return vactual;
 }
