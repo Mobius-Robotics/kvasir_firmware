@@ -14,9 +14,8 @@ void SetServoCommand::process() {
 }
 
 void ReadAnglesCommand::process() {
-	int32_t positions[3];
-	robot.encoders.get_cumulative_positions(positions);
-	HAL_UART_Transmit(robot.usb_uart_, (uint8_t*) positions, sizeof(positions),
+	Position position = robot.position_estimator.get_position();
+	HAL_UART_Transmit(robot.usb_uart_, reinterpret_cast<uint8_t*>(&position), sizeof(position),
 			100);
 }
 

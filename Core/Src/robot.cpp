@@ -27,7 +27,7 @@ void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 	// Initialize encoder multiplexer.
 	// NB: this must be the first I2C peripheral to be initialized,
 	//     as it sets up the bus multiplexing for the other peripherals!
-	if (encoders.init(i2c_) != HAL_OK)
+	if (position_estimator.init(i2c_) != HAL_OK)
 		Error_Handler();
 
 	// Initialize servo driver.
@@ -104,5 +104,5 @@ void Robot::handle_command(void) {
 }
 
 void Robot::update(void) {
-	encoders.update_cumulative_positions();
+	position_estimator.update();
 }

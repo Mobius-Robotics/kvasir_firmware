@@ -1,10 +1,10 @@
 #pragma once
 
+#include <peripherals/position_estimator.hpp>
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_nucleo.h"
 #include "peripherals/TMC2209.hpp"
 #include "peripherals/pca9685.h"
-#include "peripherals/multi_as5600.hpp"
 #include "peripherals/lcd1602.hpp"
 #include "commands.hpp"
 #include "constants.hpp"
@@ -21,6 +21,6 @@ public:
 	I2C_HandleTypeDef *i2c_ = nullptr;
 
 	TMC2209 stepper1, stepper2, stepper3;
-	MultiAS5600 encoders;
+	PositionEstimator position_estimator;
 	LCD1602_I2C lcd;
 };
