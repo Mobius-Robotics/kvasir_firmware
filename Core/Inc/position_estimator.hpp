@@ -1,6 +1,6 @@
 #pragma once
 
-#include "as5600.h"
+#include "peripherals/as5600.h"
 #include "wheel_speed_estimator.hpp"
 #include "constants.hpp"
 

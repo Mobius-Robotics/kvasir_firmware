@@ -1,7 +1,7 @@
 #pragma once
 
-constexpr double WHEEL_RADIUS = 58e-3;  // m
-constexpr double WHEEL_BASE = 16.4e-3; // m
+constexpr double WHEEL_RADIUS = 65e-3;  // m
+constexpr double WHEEL_BASE = 200e-3; // m
 constexpr double SIN_PI_3 = 0.8660254037844386;
 constexpr double SQRT_3 = 1.7320508075688772;
 

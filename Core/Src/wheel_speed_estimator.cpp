@@ -32,15 +32,18 @@ double WheelSpeedEstimator::update(uint16_t current_count,
 	double measurement = (delta_pos / delta_time)
 			/ ((double) ENCODER_FULL_RANGE) * TAU;
 
+
 	// Kalman filter update
 
 	// Predict step (state remains the same)
-	p = p + q;
+	/*p = p + q;
 
 	// Update step
 	double k = p / (p + r);
 	x = x + k * (measurement - x);
-	p = (1 - k) * p;
+	p = (1 - k) * p;*/
+
+	x = measurement;
 
 	// Get ready for the next step
 	prev_count = current_count;

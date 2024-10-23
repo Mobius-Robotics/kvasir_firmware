@@ -1,6 +1,6 @@
 #pragma once
 
-#include <peripherals/position_estimator.hpp>
+#include <position_estimator.hpp>
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_nucleo.h"
 #include "peripherals/TMC2209.hpp"

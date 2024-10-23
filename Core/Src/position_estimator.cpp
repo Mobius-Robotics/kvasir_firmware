@@ -1,6 +1,8 @@
-#include <peripherals/position_estimator.hpp>
+#include "position_estimator.hpp"
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_nucleo.h"
+
+#include "main.h"
 
 #define CHECK_HAL_STATUS(func_call)           \
     do {                                      \
