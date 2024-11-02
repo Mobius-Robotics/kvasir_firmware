@@ -9,25 +9,25 @@ void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 	i2c_ = i2c;
 
 	// Initialize stepper drivers.
-	stepper1.setup(tmc_uart_, 115200, TMC2209::SERIAL_ADDRESS_0);
-	stepper1.enableAutomaticCurrentScaling();
-	stepper1.setRunCurrent(100);
-	stepper1.enable();
+	stepper1_.setup(tmc_uart_, 115200, TMC2209::SERIAL_ADDRESS_0);
+	stepper1_.enableAutomaticCurrentScaling();
+	stepper1_.setRunCurrent(100);
+	stepper1_.enable();
 
-	stepper2.setup(tmc_uart_, 115200, TMC2209::SERIAL_ADDRESS_1);
-	stepper2.enableAutomaticCurrentScaling();
-	stepper2.setRunCurrent(100);
-	stepper2.enable();
+	stepper2_.setup(tmc_uart_, 115200, TMC2209::SERIAL_ADDRESS_1);
+	stepper2_.enableAutomaticCurrentScaling();
+	stepper2_.setRunCurrent(100);
+	stepper2_.enable();
 
-	stepper3.setup(tmc_uart_, 115200, TMC2209::SERIAL_ADDRESS_2);
-	stepper3.enableAutomaticCurrentScaling();
-	stepper3.setRunCurrent(100);
-	stepper3.enable();
+	stepper3_.setup(tmc_uart_, 115200, TMC2209::SERIAL_ADDRESS_2);
+	stepper3_.enableAutomaticCurrentScaling();
+	stepper3_.setRunCurrent(100);
+	stepper3_.enable();
 
 	// Initialize encoder multiplexer.
 	// NB: this must be the first I2C peripheral to be initialized,
 	//     as it sets up the bus multiplexing for the other peripherals!
-	if (position_estimator.init(i2c_) != HAL_OK)
+	if (wheel_speeds_estimator_.init(i2c_) != HAL_OK)
 		Error_Handler();
 
 	// Initialize servo driver.
@@ -35,11 +35,11 @@ void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 		Error_Handler();
 
 	// Initialize LCD screen.
-	lcd.init(i2c_);
-	lcd.put_cursor(0, 0);
-	lcd.send_string("IT'S ALIVE!");
-	lcd.put_cursor(1, 0);
-	lcd.send_string("- Dr. Frankenstein");
+	lcd_.init(i2c_);
+	lcd_.put_cursor(0, 0);
+	lcd_.send_string("IT'S ALIVE!");
+	lcd_.put_cursor(1, 0);
+	lcd_.send_string("- Dr. Frankenstein");
 }
 
 void Robot::handle_command(void) {
@@ -66,8 +66,8 @@ void Robot::handle_command(void) {
 		cmd.process();
 		break;
 	}
-	case 'a': {  // Read angles
-		ReadAnglesCommand cmd;
+	case 'a': {  // Read wheel info
+		ReadWheelInfoCommand cmd;
 		cmd.process();
 		break;
 	}
@@ -104,5 +104,5 @@ void Robot::handle_command(void) {
 }
 
 void Robot::update(void) {
-	position_estimator.update();
+	wheel_speeds_estimator_.update();
 }

@@ -7,21 +7,21 @@
 constexpr uint8_t TCA9548A_ADDR = (0x71 << 1);  // Shifted left for HAL (7-bit address)
 
 #pragma pack(push, 1)
-struct Position {
-	double x, y, psi;
+struct WheelInfo {
+	double wheel1_pos, wheel2_pos, wheel3_pos;
+	double wheel1_speed, wheel2_speed, wheel3_speed;
 };
 #pragma pack(pop)
 
-class PositionEstimator {
+class WheelSpeedsEstimator {
 public:
 	HAL_StatusTypeDef init(I2C_HandleTypeDef*);
 	HAL_StatusTypeDef update(void);
-	Position get_position(void);
+	WheelInfo get_wheel_info(void);
 private:
 	I2C_HandleTypeDef *i2c_ = nullptr;
 	AS5600_TypeDef *as5600_;
     WheelSpeedEstimator wheel1_, wheel2_, wheel3_;
-    double x_ = 0.0, y_ = 0.0, psi_ = 0.0;
 
     uint32_t prev_time_ = 0;
 

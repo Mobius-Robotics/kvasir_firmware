@@ -15,7 +15,7 @@ struct SetServoCommand {
 };
 
 // Struct for 'a' command - Read angles
-struct ReadAnglesCommand {
+struct ReadWheelInfoCommand {
 	void process();
 };
 

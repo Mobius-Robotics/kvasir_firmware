@@ -1,6 +1,6 @@
 #pragma once
 
-#include <position_estimator.hpp>
+#include <wheel_speeds_estimator.hpp>
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_nucleo.h"
 #include "peripherals/TMC2209.hpp"
@@ -20,7 +20,7 @@ public:
 	UART_HandleTypeDef *usb_uart_ = nullptr;
 	I2C_HandleTypeDef *i2c_ = nullptr;
 
-	TMC2209 stepper1, stepper2, stepper3;
-	PositionEstimator position_estimator;
-	LCD1602_I2C lcd;
+	TMC2209 stepper1_, stepper2_, stepper3_;
+	WheelSpeedsEstimator wheel_speeds_estimator_;
+	LCD1602_I2C lcd_;
 };

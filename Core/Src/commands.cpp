@@ -7,31 +7,38 @@
 extern Robot robot;
 extern "C" void Error_Handler(void);
 
+inline double rad_per_s_to_vactual(double u) {
+	double v_rps = u / TAU; // revolutions per second
+	double v_steps_per_second = v_rps * FSC * USC; // steps per second
+	double vactual = v_steps_per_second / 0.715; // VACTUAL register, based on internal oscillator
+	return vactual;
+}
+
 void SetServoCommand::process() {
 	if (PCA9685_SetPwm(channel, onTime, offTime) != PCA9685_OK) {
 		Error_Handler();
 	}
 }
 
-void ReadAnglesCommand::process() {
-	Position position = robot.position_estimator.get_position();
-	HAL_UART_Transmit(robot.usb_uart_, reinterpret_cast<uint8_t*>(&position), sizeof(position),
-			100);
+void ReadWheelInfoCommand::process() {
+	WheelInfo wheel_info = robot.wheel_speeds_estimator_.get_wheel_info();
+	HAL_UART_Transmit(robot.usb_uart_, reinterpret_cast<uint8_t*>(&wheel_info),
+			sizeof(wheel_info), 100);
 }
 
 void SetWheelSpeedsCommand::process() {
 	for (uint8_t i = 0; i < STEPPER_CMDS_REPETITION; ++i) {
-		robot.stepper1.moveAtVelocity(speeds[0]);
-		robot.stepper2.moveAtVelocity(speeds[1]);
-		robot.stepper3.moveAtVelocity(speeds[2]);
+		robot.stepper1_.moveAtVelocity(rad_per_s_to_vactual(speeds[0]));
+		robot.stepper2_.moveAtVelocity(rad_per_s_to_vactual(speeds[1]));
+		robot.stepper3_.moveAtVelocity(rad_per_s_to_vactual(speeds[2]));
 	}
 }
 
 void StopSteppersCommand::process() {
 	for (uint8_t i = 0; i < STEPPER_CMDS_REPETITION; ++i) {
-		robot.stepper1.moveAtVelocity(0);
-		robot.stepper2.moveAtVelocity(0);
-		robot.stepper3.moveAtVelocity(0);
+		robot.stepper1_.moveAtVelocity(0);
+		robot.stepper2_.moveAtVelocity(0);
+		robot.stepper3_.moveAtVelocity(0);
 	}
 }
 
@@ -39,13 +46,6 @@ void PongCommand::process() {
 	const char pong[] = "pong";
 	HAL_UART_Transmit(robot.usb_uart_, reinterpret_cast<const uint8_t*>(pong),
 			sizeof(pong) - 1, 100);
-}
-
-inline double rad_per_s_to_vactual(double u) {
-	double v_rps = u / TAU; // revolutions per second
-	double v_steps_per_second = v_rps * FSC * USC; // steps per second
-	double vactual = v_steps_per_second / 0.715; // VACTUAL register, based on internal oscillator
-	return vactual;
 }
 
 void InverseKinematicsCommand::process() {
@@ -60,8 +60,8 @@ void InverseKinematicsCommand::process() {
 	double vactual3 = rad_per_s_to_vactual(u3);
 
 	for (uint8_t i = 0; i < STEPPER_CMDS_REPETITION; ++i) {
-		robot.stepper1.moveAtVelocity(static_cast<int32_t>(vactual1));
-		robot.stepper2.moveAtVelocity(static_cast<int32_t>(vactual2));
-		robot.stepper3.moveAtVelocity(static_cast<int32_t>(vactual3));
+		robot.stepper1_.moveAtVelocity(static_cast<int32_t>(vactual1));
+		robot.stepper2_.moveAtVelocity(static_cast<int32_t>(vactual2));
+		robot.stepper3_.moveAtVelocity(static_cast<int32_t>(vactual3));
 	}
 }
