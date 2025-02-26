@@ -1,7 +1,5 @@
 #include "robot.hpp"
 
-extern "C" void Error_Handler(void);
-
 void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 		I2C_HandleTypeDef *i2c) {
 	tmc_uart_ = tmc_uart;
@@ -27,12 +25,16 @@ void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 	// Initialize encoder multiplexer.
 	// NB: this must be the first I2C peripheral to be initialized,
 	//     as it sets up the bus multiplexing for the other peripherals!
-	if (wheel_speeds_estimator_.init(i2c_) != HAL_OK)
-		Error_Handler();
+	if (wheel_speeds_estimator_.init(i2c_) != HAL_OK) {
+		//error_flashes = 1;
+		//Error_Handler();
+	}
 
 	// Initialize servo driver.
-	if (PCA9685_Init(i2c_) != PCA9685_OK)
+	if (PCA9685_Init(i2c_) != PCA9685_OK) {
+		error_flashes = 2;
 		Error_Handler();
+	}
 
 	// Initialize LCD screen.
 	lcd_.init(i2c_);

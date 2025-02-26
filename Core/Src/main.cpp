@@ -52,6 +52,8 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 Robot robot;
+
+volatile uint8_t error_flashes = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -388,6 +390,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		robot.update();
 	}
 }
+
+void busy_wait(uint32_t ms) {
+    uint32_t count = (SystemCoreClock / 8000) * ms; // Approximate for 1ms (tune as needed)
+    while (count--) {
+        __NOP(); // Prevents aggressive compiler optimizations
+    }
+}
 /* USER CODE END 4 */
 
 /**
@@ -399,7 +408,17 @@ void Error_Handler(void) {
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
-		BSP_LED_On(LED_GREEN);
+		if (error_flashes == 0) {
+			BSP_LED_On(LED_GREEN);
+		} else {
+			for (uint8_t i = 0; i < error_flashes; i++) {
+				BSP_LED_On(LED_GREEN);
+				busy_wait(100);
+				BSP_LED_Off(LED_GREEN);
+				busy_wait(100);
+			}
+		}
+		busy_wait(500);
 	}
 	/* USER CODE END Error_Handler_Debug */
 }

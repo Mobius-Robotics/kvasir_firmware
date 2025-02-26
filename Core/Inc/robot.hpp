@@ -8,6 +8,7 @@
 #include "peripherals/lcd1602.hpp"
 #include "commands.hpp"
 #include "constants.hpp"
+#include "main.h"
 
 class Robot {
 public:

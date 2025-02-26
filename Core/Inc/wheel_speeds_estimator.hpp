@@ -27,4 +27,6 @@ private:
 
 	HAL_StatusTypeDef set_channel(uint8_t);
 	HAL_StatusTypeDef read_sensors(uint16_t*);
+
+	bool initialized_ = false;
 };

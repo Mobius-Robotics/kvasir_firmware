@@ -25,6 +25,7 @@ HAL_StatusTypeDef WheelSpeedsEstimator::init(I2C_HandleTypeDef *hi2c) {
 		CHECK_HAL_STATUS(AS5600_Init(as5600_));
 	}
 
+	initialized_ = true;
 	return HAL_OK;
 }
 
@@ -42,7 +43,7 @@ HAL_StatusTypeDef WheelSpeedsEstimator::set_channel(uint8_t channel) {
 
 	uint8_t cmd = (1 << channel) | 0b01100000;
 	auto status = HAL_I2C_Master_Transmit(i2c_, TCA9548A_ADDR, &cmd, 1,
-	HAL_MAX_DELAY);
+	1000);
 	return status;
 }
 
@@ -51,6 +52,7 @@ inline int32_t positive_mod(int32_t a, int32_t n) {
 }
 
 HAL_StatusTypeDef WheelSpeedsEstimator::update(void) {
+	if (!initialized_) return HAL_OK;
 	uint32_t current_time = HAL_GetTick();
 	if (prev_time_ != 0) {
 		uint16_t counts[WHEEL_COUNT];
