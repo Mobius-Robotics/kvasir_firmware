@@ -18,6 +18,8 @@ public:
 	HAL_StatusTypeDef init(I2C_HandleTypeDef*);
 	HAL_StatusTypeDef update(void);
 	WheelInfo get_wheel_info(void);
+
+	bool initialized_ = false;
 private:
 	I2C_HandleTypeDef *i2c_ = nullptr;
 	AS5600_TypeDef *as5600_;
@@ -27,6 +29,4 @@ private:
 
 	HAL_StatusTypeDef set_channel(uint8_t);
 	HAL_StatusTypeDef read_sensors(uint16_t*);
-
-	bool initialized_ = false;
 };

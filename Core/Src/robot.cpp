@@ -39,9 +39,10 @@ void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 	// Initialize LCD screen.
 	lcd_.init(i2c_);
 	lcd_.put_cursor(0, 0);
-	lcd_.send_string("IT'S ALIVE!");
+	lcd_.send_string("<3 from Mobius");
 	lcd_.put_cursor(1, 0);
-	lcd_.send_string("- Dr. Frankenstein");
+	if (wheel_speeds_estimator_.initialized_) lcd_.send_string("Wheels OK!");
+	else lcd_.send_string("Bad Wheels :(");
 }
 
 void Robot::handle_command(void) {

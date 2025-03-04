@@ -223,7 +223,7 @@ HAL_StatusTypeDef AS5600_Init(AS5600_TypeDef *a) {
     }
     if (HAL_I2C_Mem_Write(a->i2cHandle, a->i2cAddr,
                              AS5600_REGISTER_CONF_HIGH, I2C_MEMADD_SIZE_8BIT,
-                             a->confRegister, 2, HAL_MAX_DELAY) != HAL_OK) {
+                             a->confRegister, 2, 1000) != HAL_OK) {
         status = HAL_ERROR;
         auto error = HAL_I2C_GetError(a->i2cHandle);
         return status;
