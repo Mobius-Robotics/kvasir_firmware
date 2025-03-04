@@ -4,6 +4,8 @@
 
 #include "robot.hpp"
 
+#include <cstring> // for memcpy
+
 extern Robot robot;
 extern "C" void Error_Handler(void);
 
@@ -64,4 +66,12 @@ void InverseKinematicsCommand::process() {
 		robot.stepper2_.moveAtVelocity(static_cast<int32_t>(vactual2));
 		robot.stepper3_.moveAtVelocity(static_cast<int32_t>(vactual3));
 	}
+}
+
+void LcdPrintCommand::process() {
+	if (line >= 2) return;
+	robot.lcd_.put_cursor(line, 0);
+	char buf[LCD_WIDTH + 1] {}; // zero-initialized to ensure the string is NUL terminated.
+	std::memcpy(buf, msg, LCD_WIDTH);
+	robot.lcd_.send_string(buf);
 }

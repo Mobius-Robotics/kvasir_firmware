@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "constants.hpp"
+
 // Ensure structs are packed to avoid padding
 #pragma pack(push, 1)
 
@@ -41,6 +43,14 @@ struct InverseKinematicsCommand {
 	double x_dot;
 	double y_dot;
 	double theta_dot;
+
+	void process();
+};
+
+// Struct for 'l' command - Print message to LCD
+struct LcdPrintCommand {
+	uint8_t line;
+	char msg[LCD_WIDTH];
 
 	void process();
 };

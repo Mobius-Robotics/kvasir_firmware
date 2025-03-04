@@ -14,3 +14,5 @@ constexpr uint8_t STEPPER_CMDS_REPETITION = 1;
 constexpr int32_t ENCODER_FULL_RANGE = 4096;
 
 constexpr uint8_t WHEEL_COUNT = 3;
+
+constexpr uint8_t LCD_WIDTH = 16;

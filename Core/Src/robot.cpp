@@ -100,6 +100,14 @@ void Robot::handle_command(void) {
 		cmd.process();
 		break;
 	}
+	case 'l': { // Print to LCD
+		LcdPrintCommand cmd;
+		if (HAL_UART_Receive(usb_uart_, reinterpret_cast<uint8_t*>(&cmd),
+				sizeof(cmd), 100) != HAL_OK)
+			return;
+		cmd.process();
+		break;
+	}
 	default:
 		// Handle unknown command if necessary
 		break;
