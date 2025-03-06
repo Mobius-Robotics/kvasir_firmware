@@ -17,9 +17,6 @@ inline double rad_per_s_to_vactual(double u) {
 }
 
 void SetServoCommand::process() {
-	if (PCA9685_SetPwm(channel, onTime, offTime) != PCA9685_OK) {
-		Error_Handler();
-	}
 }
 
 void ReadWheelInfoCommand::process() {
