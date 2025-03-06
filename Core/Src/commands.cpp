@@ -17,6 +17,8 @@ inline double rad_per_s_to_vactual(double u) {
 }
 
 void SetServoCommand::process() {
+	if (channel == 0) TIM1->CCR1 = ccr;
+	else if (channel == 1) TIM1->CCR2 = ccr;
 }
 
 void ReadWheelInfoCommand::process() {

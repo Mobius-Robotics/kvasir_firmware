@@ -131,9 +131,11 @@ int main(void) {
 	robot.init(&huart1, &hcom_uart[COM1], &hi2c1);
 	HAL_TIM_Base_Start_IT(&htim2);
 
-	// Start 50% duty cycle on TIM1 CH1, we expect a ~3.54 V RMS.
-	TIM1->CCR1 = 10000;
+	// Start off with claw open and elevator at resting position.
+	TIM1->CCR1 = 10000 / 50 * 11;
+	TIM1->CCR2 = 10000 / 50 * 9;
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 
 	while (1) {
 		/* USER CODE END WHILE */
@@ -281,7 +283,7 @@ static void MX_TIM1_Init(void) {
 
 	/* USER CODE END TIM1_Init 1 */
 	htim1.Instance = TIM1;
-	htim1.Init.Prescaler = 72;
+	htim1.Init.Prescaler = 64;
 	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
 	htim1.Init.Period = 19999;
 	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -312,6 +314,10 @@ static void MX_TIM1_Init(void) {
 	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
 	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 	if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_2)
 			!= HAL_OK) {
 		Error_Handler();
 	}
