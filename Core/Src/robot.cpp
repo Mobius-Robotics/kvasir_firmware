@@ -22,27 +22,10 @@ void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 	stepper3_.setRunCurrent(100);
 	stepper3_.enable();
 
-	// Initialize encoder multiplexer.
-	// NB: this must be the first I2C peripheral to be initialized,
-	//     as it sets up the bus multiplexing for the other peripherals!
-	if (wheel_speeds_estimator_.init(i2c_) != HAL_OK) {
-		//error_flashes = 1;
-		//Error_Handler();
-	}
-
-	// Initialize servo driver.
-	if (PCA9685_Init(i2c_) != PCA9685_OK) {
-		error_flashes = 2;
-		Error_Handler();
-	}
-
 	// Initialize LCD screen.
 	lcd_.init(i2c_);
 	lcd_.put_cursor(0, 0);
 	lcd_.send_string("<3 from Mobius");
-	lcd_.put_cursor(1, 0);
-	if (wheel_speeds_estimator_.initialized_) lcd_.send_string("Wheels OK!");
-	else lcd_.send_string("Bad Wheels :(");
 }
 
 void Robot::handle_command(void) {
