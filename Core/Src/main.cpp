@@ -141,7 +141,7 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-		robot.handle_command();
+		robot.recv_command();
 	}
 	/* USER CODE END 3 */
 }
@@ -478,9 +478,16 @@ static void MX_GPIO_Init(void) {
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM2) {
-		robot.update();
+		//robot.update();
 	}
 }
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	if (huart != robot.usb_uart_) return;
+	robot.usb_rx_buf_.push(robot.usb_rx_temp_);
+	HAL_UART_Receive_IT(huart, &robot.usb_rx_temp_, 1);
+}
+
 
 void busy_wait(uint32_t ms) {
 	uint32_t count = (SystemCoreClock / 8000) * ms; // Approximate for 1ms (tune as needed)

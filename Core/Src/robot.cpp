@@ -1,5 +1,6 @@
 #include "robot.hpp"
 
+
 void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 		I2C_HandleTypeDef *i2c) {
 	tmc_uart_ = tmc_uart;
@@ -26,77 +27,83 @@ void Robot::init(UART_HandleTypeDef *tmc_uart, UART_HandleTypeDef *usb_uart,
 	lcd_.init(i2c_);
 	lcd_.put_cursor(0, 0);
 	lcd_.send_string("<3 from Mobius");
+
+	// TIM1 ARR sets the PWM frequency, empirically set to 20067 instead of the 19999 it should theoretically be for 50 Hz.
+	//TIM1->ARR = 20067;
+
+	// Start the UART RX interrupt cycle.
+	HAL_UART_Receive_IT(usb_uart_, &usb_rx_temp_, 1);
 }
 
-void Robot::handle_command(void) {
-	uint8_t header;
-
-	// Wait to receive the header byte 'M'
-	if (HAL_UART_Receive(usb_uart_, &header, 1, 100) != HAL_OK)
+void Robot::recv_command(void) {
+	// Load header and opcode from the recv buffer, if available.
+	uint8_t header, opcode;
+	if (!usb_rx_buf_.peek_two(header, opcode)) {
+		__WFI(); // If we haven't got two bytes available, go into sleep mode until the next interrupt.
 		return;
+	}
+
+	// Check the header: if it isn't correct, we should discard it and move on, perhaps there's been some sort of noise.
 	if (header != 'M') {
-		// Invalid header byte; early return
+		usb_rx_buf_.discard();
 		return;
 	}
 
-	uint8_t command;
-	if (HAL_UART_Receive(usb_uart_, &command, 1, 100) != HAL_OK)
-		return;
-
-	switch (command) {
-	case 's': {  // Set servo
-		SetServoCommand cmd;
-		if (HAL_UART_Receive(usb_uart_, reinterpret_cast<uint8_t*>(&cmd),
-				sizeof(cmd), 100) != HAL_OK)
-			return;
-		cmd.process();
+	// Based on the opcode, choose the correct command type.
+	// NB: Those without a payload need to manually handle discarding their header and opcode.
+	switch (opcode) {
+	case 's': {  // Set servo CCRs.
+		recv_payload_and_execute<SetServoCommand>();
 		break;
 	}
-	case 'a': {  // Read wheel info
+	case 'a': {  // Read wheel info.
 		ReadWheelInfoCommand cmd;
-		cmd.process();
+		cmd.execute();
+		usb_rx_buf_.discard(2);
 		break;
 	}
-	case 'u': {  // Set wheel speeds
-		SetWheelSpeedsCommand cmd;
-		if (HAL_UART_Receive(usb_uart_, reinterpret_cast<uint8_t*>(&cmd),
-				sizeof(cmd), 100) != HAL_OK)
-			return;
-		cmd.process();
+	case 'u': {  // Set wheel speeds.
+		recv_payload_and_execute<SetWheelSpeedsCommand>();
 		break;
 	}
-	case 'x': {  // Stop all steppers
+	case 'x': {  // Stop all steppers.
 		StopSteppersCommand cmd;
-		cmd.process();
+		cmd.execute();
+		usb_rx_buf_.discard(2);
 		break;
 	}
-	case 'p': {  // Reply pong
+	case 'p': {  // Reply pong.
 		PongCommand cmd;
-		cmd.process();
+		cmd.execute();
+		usb_rx_buf_.discard(2);
 		break;
 	}
-	case 'k': {  // Set wheel velocities via inverse kinematics
-		InverseKinematicsCommand cmd;
-		if (HAL_UART_Receive(usb_uart_, reinterpret_cast<uint8_t*>(&cmd),
-				sizeof(cmd), 100) != HAL_OK)
-			return;
-		cmd.process();
+	case 'k': {  // Set wheel velocities via inverse kinematics.
+		recv_payload_and_execute<InverseKinematicsCommand>();
 		break;
 	}
-	case 'l': { // Print to LCD
-		LcdPrintCommand cmd;
-		if (HAL_UART_Receive(usb_uart_, reinterpret_cast<uint8_t*>(&cmd),
-				sizeof(cmd), 100) != HAL_OK)
-			return;
-		cmd.process();
+	case 'l': { // Print to LCD.
+		recv_payload_and_execute<LcdPrintCommand>();
 		break;
 	}
 	default:
-		// Handle unknown command if necessary
+		usb_rx_buf_.discard(2);
 		break;
 	}
 }
 
-void Robot::update(void) {
-	wheel_speeds_estimator_.update();
+template<typename T> void Robot::recv_payload_and_execute(void) {
+	// Check if we've got enough data to load the command.
+	T cmd;
+	if (usb_rx_buf_.available() < (2+sizeof(T))) return;
+
+	// If so, discard header & opcode and start copying from the buffer into the command instance.
+	usb_rx_buf_.discard(2);
+	auto ptr = reinterpret_cast<uint8_t*>(&cmd);
+	for (size_t i = 0; i < sizeof(T); ++i) {
+		usb_rx_buf_.pop(ptr[i]);
+	}
+
+	// Bombs away!
+	cmd.execute();
 }
