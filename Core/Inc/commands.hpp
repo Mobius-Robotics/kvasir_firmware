@@ -9,8 +9,8 @@
 
 // Struct for 's' command - Set servo
 struct SetServoCommand {
-	uint8_t channel;
-	uint16_t ccr;
+	uint16_t ccr1;
+	uint16_t ccr2;
 
 	void process();
 };
