@@ -47,7 +47,6 @@ COM_InitTypeDef BspCOMInit;
 I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim1;
-TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart1;
 
@@ -62,7 +61,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ICACHE_Init(void);
 static void MX_USART1_UART_Init(void);
-static void MX_TIM2_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
@@ -102,7 +100,6 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_ICACHE_Init();
 	MX_USART1_UART_Init();
-	MX_TIM2_Init();
 	MX_I2C1_Init();
 	MX_TIM1_Init();
 	/* USER CODE BEGIN 2 */
@@ -129,7 +126,6 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 
 	robot.init(&huart1, &hcom_uart[COM1], &hi2c1);
-	HAL_TIM_Base_Start_IT(&htim2);
 
 	// Start off with claw open and elevator at resting position.
 	TIM1->CCR1 = 10000 / 50 * 11;
@@ -346,48 +342,6 @@ static void MX_TIM1_Init(void) {
 }
 
 /**
- * @brief TIM2 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_TIM2_Init(void) {
-
-	/* USER CODE BEGIN TIM2_Init 0 */
-
-	/* USER CODE END TIM2_Init 0 */
-
-	TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
-	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
-
-	/* USER CODE BEGIN TIM2_Init 1 */
-
-	/* USER CODE END TIM2_Init 1 */
-	htim2.Instance = TIM2;
-	htim2.Init.Prescaler = 6399;
-	htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim2.Init.Period = 99;
-	htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-	if (HAL_TIM_Base_Init(&htim2) != HAL_OK) {
-		Error_Handler();
-	}
-	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-	if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK) {
-		Error_Handler();
-	}
-	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN TIM2_Init 2 */
-
-	/* USER CODE END TIM2_Init 2 */
-
-}
-
-/**
  * @brief USART1 Initialization Function
  * @param None
  * @retval None
@@ -476,18 +430,12 @@ static void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if (htim->Instance == TIM2) {
-		//robot.update();
-	}
-}
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if (huart != robot.usb_uart_) return;
+	if (huart != robot.usb_uart_)
+		return;
 	robot.usb_rx_buf_.push(robot.usb_rx_temp_);
 	HAL_UART_Receive_IT(huart, &robot.usb_rx_temp_, 1);
 }
-
 
 void busy_wait(uint32_t ms) {
 	uint32_t count = (SystemCoreClock / 8000) * ms; // Approximate for 1ms (tune as needed)

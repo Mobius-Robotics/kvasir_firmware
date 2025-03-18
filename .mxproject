@@ -3,17 +3,16 @@ LibFiles=Drivers\STM32H5xx_HAL_Driver\Inc\stm32h5xx_hal_cortex.h;Drivers\STM32H5
 
 [PreviousUsedCubeIDEFiles]
 SourceFiles=Core\Src\main.c;Core\Src\stm32h5xx_it.c;Core\Src\stm32h5xx_hal_msp.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_cortex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_i2c.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_i2c_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_dma.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_dma_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_rcc.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_rcc_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_flash.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_flash_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_gpio.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_pwr.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_pwr_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_exti.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_icache.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_tim.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_tim_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_uart.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_uart_ex.c;Drivers\BSP\STM32H5xx_Nucleo\stm32h5xx_nucleo.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_usart.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_usart_ex.c;Drivers\CMSIS\Device\ST\STM32H5xx\Source\Templates\system_stm32h5xx.c;Core\Src\system_stm32h5xx.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_cortex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_i2c.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_i2c_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_dma.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_dma_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_rcc.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_rcc_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_flash.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_flash_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_gpio.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_pwr.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_pwr_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_exti.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_icache.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_tim.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_tim_ex.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_uart.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_uart_ex.c;Drivers\BSP\STM32H5xx_Nucleo\stm32h5xx_nucleo.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_usart.c;Drivers\STM32H5xx_HAL_Driver\Src\stm32h5xx_hal_usart_ex.c;Drivers\CMSIS\Device\ST\STM32H5xx\Source\Templates\system_stm32h5xx.c;Core\Src\system_stm32h5xx.c;;;
-HeaderPath=Drivers\STM32H5xx_HAL_Driver\Inc;Drivers\STM32H5xx_HAL_Driver\Inc\Legacy;Drivers\BSP\STM32H5xx_Nucleo;Drivers\CMSIS\Device\ST\STM32H5xx\Include;Drivers\CMSIS\Include;Drivers\BSP\Components\lsm6dso;Drivers\BSP\Components\lis3mdl;Core\Inc;
+HeaderPath=Drivers\STM32H5xx_HAL_Driver\Inc;Drivers\STM32H5xx_HAL_Driver\Inc\Legacy;Drivers\BSP\STM32H5xx_Nucleo;Drivers\CMSIS\Device\ST\STM32H5xx\Include;Drivers\CMSIS\Include;Core\Inc;
 CDefines=USE_NUCLEO_64;USE_HAL_DRIVER;STM32H503xx;USE_HAL_DRIVER;USE_HAL_DRIVER;
 
 [PreviousGenFiles]
 AdvancedFolderStructure=true
-HeaderFileListSize=5
+HeaderFileListSize=4
 HeaderFiles#0=..\Core\Inc\stm32h5xx_nucleo_conf.h
 HeaderFiles#1=..\Core\Inc\stm32h5xx_it.h
-HeaderFiles#2=..\Core\Inc\RTE_Components.h
-HeaderFiles#3=..\Core\Inc\stm32h5xx_hal_conf.h
-HeaderFiles#4=..\Core\Inc\main.h
+HeaderFiles#2=..\Core\Inc\stm32h5xx_hal_conf.h
+HeaderFiles#3=..\Core\Inc\main.h
 HeaderFolderListSize=1
 HeaderPath#0=..\Core\Inc
 HeaderFiles=;
@@ -24,12 +23,4 @@ SourceFiles#2=..\Core\Src\main.c
 SourceFolderListSize=1
 SourcePath#0=..\Core\Src
 SourceFiles=;
-
-[ThirdPartyIp]
-ThirdPartyIpNumber=1
-ThirdPartyIpName#0=STMicroelectronics.X-CUBE-MEMS1.10.0.0
-
-[ThirdPartyIp#STMicroelectronics.X-CUBE-MEMS1.10.0.0]
-header=Drivers\BSP\Components\lsm6dso\lsm6dso_reg.h;Drivers\BSP\Components\lsm6dso\lsm6dso.h;Drivers\BSP\Components\lis3mdl\lis3mdl_reg.h;Drivers\BSP\Components\lis3mdl\lis3mdl.h;
-source=Drivers\BSP\Components\lsm6dso\lsm6dso_reg.c;Drivers\BSP\Components\lsm6dso\lsm6dso.c;Drivers\BSP\Components\lis3mdl\lis3mdl_reg.c;Drivers\BSP\Components\lis3mdl\lis3mdl.c;
 
