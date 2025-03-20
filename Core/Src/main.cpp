@@ -125,6 +125,10 @@ int main(void) {
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 
+	// XXX: this is a hack due to the fact that the ioc file does not let us configure these things directly on USART3, so we do it ourselves in code.
+	HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(USART3_IRQn);
+
 	robot.init(&huart1, &hcom_uart[COM1], &hi2c1);
 
 	// Start off with claw open and elevator at resting position.
