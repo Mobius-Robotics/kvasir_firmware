@@ -19,7 +19,7 @@ public:
     UART_HandleTypeDef *usb_uart_ = nullptr;
     I2C_HandleTypeDef *i2c_ = nullptr;
 
-    TMC2209 wheel_steppers_[4];
+    TMC2209 wheel_steppers_[WHEEL_COUNT];
 
     RingBuffer usb_rx_buf_;
     uint8_t usb_rx_temp_;

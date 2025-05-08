@@ -36,3 +36,17 @@ void PongCommand::execute() {
     HAL_UART_Transmit(robot.usb_uart_, reinterpret_cast<const uint8_t*>(pong), sizeof(pong) - 1,
             100);
 }
+
+void HealthCommand::execute() {
+    struct Status {
+        bool setupAndComms[WHEEL_COUNT];
+        bool notSetupButComms[WHEEL_COUNT];
+    } status = {0};
+
+    for (size_t i = 0; i < WHEEL_COUNT; ++i) {
+        status.setupAndComms[i] = robot.wheel_steppers_[i].isSetupAndCommunicating();
+        status.notSetupButComms[i] = robot.wheel_steppers_[i].isCommunicatingButNotSetup();
+    }
+
+    HAL_UART_Transmit(robot.usb_uart_, reinterpret_cast<const uint8_t*>(&status), sizeof(Status), 100);
+}

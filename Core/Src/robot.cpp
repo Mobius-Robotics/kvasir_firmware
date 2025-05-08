@@ -1,5 +1,7 @@
 #include "robot.hpp"
 
+#include <type_traits>
+
 void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_uart, UART_HandleTypeDef *usb_uart,
         I2C_HandleTypeDef *i2c) {
     wheel_uart_ = wheel_uart;
@@ -7,12 +9,15 @@ void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_ua
     usb_uart_ = usb_uart;
     i2c_ = i2c;
 
+    HAL_Delay(200);
+
     // Initialize stepper drivers.
     for (size_t i = 0; i < WHEEL_COUNT; ++i) {
         auto &stepper = wheel_steppers_[i];
         stepper.setup(wheel_uart_, 115200, static_cast<TMC2209::SerialAddress>(i));
         stepper.enableAutomaticCurrentScaling();
         stepper.setRunCurrent(100);
+        stepper.setStandstillMode(TMC2209::STRONG_BRAKING);
         stepper.enable();
     }
 
@@ -46,15 +51,15 @@ void Robot::recv_command(void) {
             break;
         }
         case 'x': {  // Stop all steppers.
-            StopSteppersCommand cmd;
-            cmd.execute();
-            usb_rx_buf_.discard(2);
+            recv_payload_and_execute<StopSteppersCommand>();
             break;
         }
         case 'p': {  // Reply pong.
-            PongCommand cmd;
-            cmd.execute();
-            usb_rx_buf_.discard(2);
+            recv_payload_and_execute<PongCommand>();
+            break;
+        }
+        case 'h': {  // Check board health.
+            recv_payload_and_execute<HealthCommand>();
             break;
         }
         default:
@@ -64,15 +69,20 @@ void Robot::recv_command(void) {
 }
 
 template<typename T> void Robot::recv_payload_and_execute(void) {
-    // Check if we've got enough data to load the command.
     T cmd;
-    if (usb_rx_buf_.available() < (2 + sizeof(T))) return;
 
-    // If so, discard header & opcode and start copying from the buffer into the command instance.
-    usb_rx_buf_.discard(2);
-    auto ptr = reinterpret_cast<uint8_t*>(&cmd);
-    for (size_t i = 0; i < sizeof(T); ++i) {
-        usb_rx_buf_.pop(ptr[i]);
+    if (!std::is_empty<T>()) {
+        // Check if we've got enough data to load the command.
+        if (usb_rx_buf_.available() < (2 + sizeof(T))) return;
+
+        // If so, discard header & opcode and start copying from the buffer into the command instance.
+        usb_rx_buf_.discard(2);
+        auto ptr = reinterpret_cast<uint8_t*>(&cmd);
+        for (size_t i = 0; i < sizeof(T); ++i) {
+            usb_rx_buf_.pop(ptr[i]);
+        }
+    } else {
+        usb_rx_buf_.discard(2);
     }
 
     // Bombs away!

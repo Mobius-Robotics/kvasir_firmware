@@ -32,4 +32,9 @@ struct PongCommand {
     void execute();
 };
 
+// Struct for 'h' command - Reply with board health
+struct HealthCommand  {
+    void execute();
+};
+
 #pragma pack(pop)
