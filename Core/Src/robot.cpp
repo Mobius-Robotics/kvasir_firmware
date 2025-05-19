@@ -16,8 +16,8 @@ void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_ua
         auto &stepper = wheel_steppers_[i];
         stepper.setup(wheel_uart_, 115200, static_cast<TMC2209::SerialAddress>(i));
         stepper.enableAutomaticCurrentScaling();
-        stepper.setRunCurrent(100);
-        stepper.setStandstillMode(TMC2209::STRONG_BRAKING);
+        stepper.setRunCurrent(60);
+        stepper.enableCoolStep();
         stepper.enable();
     }
 
