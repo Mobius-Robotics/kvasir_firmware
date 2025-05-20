@@ -63,10 +63,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define Finecorsa1_Pin GPIO_PIN_12
 #define Finecorsa1_GPIO_Port GPIOB
-#define Finecorsa1_EXTI_IRQn EXTI12_IRQn
 #define Finecorsa2_Pin GPIO_PIN_13
 #define Finecorsa2_GPIO_Port GPIOB
-#define Finecorsa2_EXTI_IRQn EXTI13_IRQn
 #define Emergency_Pin GPIO_PIN_14
 #define Emergency_GPIO_Port GPIOB
 #define Emergency_EXTI_IRQn EXTI14_IRQn

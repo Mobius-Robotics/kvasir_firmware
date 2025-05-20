@@ -2,7 +2,6 @@
 
 #include <type_traits>
 
-
 inline double rad_per_s_to_vactual(double u) {
     double v_rps = u / TAU; // revolutions per second
     double v_steps_per_second = v_rps * FSC * USC; // steps per second
@@ -10,8 +9,8 @@ inline double rad_per_s_to_vactual(double u) {
     return vactual;
 }
 
-void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_uart, UART_HandleTypeDef *usb_uart,
-        I2C_HandleTypeDef *i2c) {
+void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_uart,
+        UART_HandleTypeDef *usb_uart, I2C_HandleTypeDef *i2c) {
     wheel_uart_ = wheel_uart;
     elevator_uart_ = elevator_uart;
     usb_uart_ = usb_uart;
@@ -31,6 +30,23 @@ void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_ua
 
     // Start the UART RX interrupt cycle.
     HAL_UART_Receive_IT(usb_uart_, &usb_rx_temp_, 1);
+
+    // Check interlock preliminarily.
+    set_interlock(HAL_GPIO_ReadPin(Emergency_GPIO_Port, Emergency_Pin) == GPIO_PIN_RESET);
+
+    // Home TIM2 servos by moving outwards.
+    if (false) { /* Endstops aren't wired yet */
+        uint16_t tim2_ccrs[TIM2_SERVOS];
+        for (size_t i = 0; i < TIM2_SERVOS; ++i)
+            tim2_ccrs[i] = (TIM2->ARR + 1) / 4 * 3;
+        set_servo_tim2_ccrs(tim2_ccrs);
+        while (HAL_GPIO_ReadPin(Finecorsa1_GPIO_Port, Finecorsa1_Pin) == GPIO_PIN_SET
+                && HAL_GPIO_ReadPin(Finecorsa2_GPIO_Port, Finecorsa2_Pin) == GPIO_PIN_SET) {
+        }
+        for (size_t i = 0; i < TIM2_SERVOS; ++i)
+            tim2_ccrs[i] = (TIM2->ARR + 1) / 2;
+        set_servo_tim2_ccrs(tim2_ccrs);
+    }
 }
 
 void Robot::recv_command(void) {
@@ -132,9 +148,10 @@ bool Robot::get_interlock() {
 void Robot::set_interlock(bool val) {
     if (val) {
         // engaging the interlock stops stepper motors and continuous servos
-        int32_t speeds[WHEEL_COUNT] {};
-        uint16_t tim2_ccrs[TIM2_SERVOS]{};
-        for (size_t i = 0; i < TIM2_SERVOS; ++i) tim2_ccrs[i] = (TIM2->ARR +1) / 2;
+        int32_t speeds[WHEEL_COUNT] { };
+        uint16_t tim2_ccrs[TIM2_SERVOS] { };
+        for (size_t i = 0; i < TIM2_SERVOS; ++i)
+            tim2_ccrs[i] = (TIM2->ARR + 1) / 2;
         set_wheel_speeds(speeds);
         set_servo_tim2_ccrs(tim2_ccrs);
         set_pullstart(false);
