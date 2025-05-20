@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_nucleo.h"
 #include "peripherals/TMC2209.hpp"
@@ -24,8 +26,25 @@ public:
     RingBuffer usb_rx_buf_;
     uint8_t usb_rx_temp_;
 
+    void set_wheel_speeds(int32_t speeds[WHEEL_COUNT]);
+
+    void set_servo_tim1_ccrs(uint16_t tim1_ccrs[TIM1_SERVOS]);
+    void set_servo_tim2_ccrs(uint16_t tim2_ccrs[TIM2_SERVOS]);
+    void set_servo_ccrs(uint16_t tim1_ccrs[TIM1_SERVOS], uint16_t tim2_ccrs[TIM2_SERVOS]);
+
+    bool get_interlock();
+    void set_interlock(bool);
+
+    bool get_pullstart();
+    void set_pullstart(bool);
+
+    void rising_pin_callback(uint16_t pin);
+    void falling_pin_callback(uint16_t pin);
 private:
     template<typename T> void recv_payload_and_execute(void);
+
+    std::atomic<bool> interlock_flag_{false};
+    std::atomic<bool> pullstart_flag_{false};
 };
 
 extern Robot robot;

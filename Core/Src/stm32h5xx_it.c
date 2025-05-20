@@ -200,6 +200,62 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32h5xx.s).                    */
 /******************************************************************************/
 
+/**
+  * @brief This function handles EXTI Line12 interrupt.
+  */
+void EXTI12_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI12_IRQn 0 */
+
+  /* USER CODE END EXTI12_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(Finecorsa1_Pin);
+  /* USER CODE BEGIN EXTI12_IRQn 1 */
+
+  /* USER CODE END EXTI12_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI Line13 interrupt.
+  */
+void EXTI13_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI13_IRQn 0 */
+
+  /* USER CODE END EXTI13_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(Finecorsa2_Pin);
+  /* USER CODE BEGIN EXTI13_IRQn 1 */
+
+  /* USER CODE END EXTI13_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI Line14 interrupt.
+  */
+void EXTI14_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI14_IRQn 0 */
+
+  /* USER CODE END EXTI14_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(Emergency_Pin);
+  /* USER CODE BEGIN EXTI14_IRQn 1 */
+
+  /* USER CODE END EXTI14_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI Line15 interrupt.
+  */
+void EXTI15_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_IRQn 0 */
+
+  /* USER CODE END EXTI15_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(Cordicella_Pin);
+  /* USER CODE BEGIN EXTI15_IRQn 1 */
+
+  /* USER CODE END EXTI15_IRQn 1 */
+}
+
 /* USER CODE BEGIN 1 */
 void USART3_IRQHandler(void)
 {

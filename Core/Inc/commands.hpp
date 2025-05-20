@@ -37,4 +37,12 @@ struct HealthCommand  {
     void execute();
 };
 
+struct Status {
+    bool setupAndComms[WHEEL_COUNT];
+    bool notSetupButComms[WHEEL_COUNT];
+
+    bool pullstart;
+    bool interlock;
+};
+
 #pragma pack(pop)

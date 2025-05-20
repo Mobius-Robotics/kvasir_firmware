@@ -612,7 +612,7 @@ void TMC2209::sendDatagramUnidirectional(Datagram &datagram,
 		uint8_t datagram_size) {
 	uint8_t byte;
 
-//	HAL_HalfDuplex_EnableTransmitter(huart_);
+	HAL_HalfDuplex_EnableTransmitter(huart_);
 	for (uint8_t i = 0; i < datagram_size; ++i) {
 		byte = (datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
 		auto status = HAL_UART_Transmit(huart_, &byte, 1, 1000);
@@ -626,18 +626,17 @@ template<typename Datagram>
 void TMC2209::sendDatagramBidirectional(Datagram &datagram,
 		uint8_t datagram_size) {
 
-//	HAL_HalfDuplex_EnableReceiver(huart_);
-
 	// clear the serial receive buffer if necessary
+    HAL_HalfDuplex_EnableReceiver(huart_);
 	while (__HAL_UART_GET_FLAG(huart_, UART_FLAG_RXNE)) {
 		// Read the received data to clear the RXNE flag
 		uint8_t dummy;
 		HAL_UART_Receive(huart_, &dummy, 1, 0);
 	}
 
-//	HAL_HalfDuplex_EnableTransmitter(huart_);
 
 	// write datagram
+    HAL_HalfDuplex_EnableTransmitter(huart_);
 	for (uint8_t i = 0; i < datagram_size; ++i) {
 		uint8_t byte = (datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
 		auto status = HAL_UART_Transmit(huart_, &byte, 1, 100);
@@ -647,10 +646,10 @@ void TMC2209::sendDatagramBidirectional(Datagram &datagram,
 		}
 	}
 
-//	HAL_HalfDuplex_EnableReceiver(huart_);
 
 	// wait for bytes sent out on TX line to be echoed on RX line
 	uint8_t echo_buf[datagram_size];
+    HAL_HalfDuplex_EnableReceiver(huart_);
 	auto reply_status = HAL_UART_Receive(huart_, echo_buf, datagram_size,
 			ECHO_DELAY_MAX_MICROSECONDS / 1000);
 
@@ -686,9 +685,8 @@ uint32_t TMC2209::read(uint8_t register_address) {
 	sendDatagramBidirectional(read_request_datagram,
 			READ_REQUEST_DATAGRAM_SIZE);
 
-//	HAL_HalfDuplex_EnableReceiver(huart_);
-
 	uint8_t reply_buf[WRITE_READ_REPLY_DATAGRAM_SIZE];
+    HAL_HalfDuplex_EnableReceiver(huart_);
 	auto reply_status = HAL_UART_Receive(huart_, reply_buf, WRITE_READ_REPLY_DATAGRAM_SIZE, REPLY_DELAY_MAX_MICROSECONDS / 1000);
 	if (reply_status != HAL_OK) {
 		return 0;
