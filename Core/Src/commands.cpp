@@ -35,3 +35,7 @@ void HealthCommand::execute() {
     HAL_UART_Transmit(robot.usb_uart_, reinterpret_cast<const uint8_t*>(&status), sizeof(Status),
             100);
 }
+
+void ElevatorCommand::execute() {
+    robot.step_elevator(steps, dir);
+}

@@ -10,11 +10,20 @@ inline double rad_per_s_to_vactual(double u) {
 }
 
 void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_uart,
-        UART_HandleTypeDef *usb_uart, I2C_HandleTypeDef *i2c) {
+        UART_HandleTypeDef *usb_uart, I2C_HandleTypeDef *i2c, GPIO_TypeDef *elevator_step_port,
+        uint16_t elevator_step_pin,
+
+        GPIO_TypeDef *elevator_dir_port, uint16_t elevator_dir_pin, TIM_HandleTypeDef *us_timer) {
     wheel_uart_ = wheel_uart;
     elevator_uart_ = elevator_uart;
     usb_uart_ = usb_uart;
     i2c_ = i2c;
+
+    elevator_step_port_ = elevator_step_port;
+    elevator_step_pin_ = elevator_step_pin;
+    elevator_dir_port_ = elevator_dir_port;
+    elevator_dir_pin_ = elevator_dir_pin;
+    us_timer_ = us_timer;
 
     HAL_Delay(200);
 
@@ -27,6 +36,12 @@ void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_ua
         stepper.enableCoolStep();
         stepper.enable();
     }
+
+    elevator_stepper_.setup(elevator_uart_, 115200, static_cast<TMC2209::SerialAddress>(0));
+    elevator_stepper_.enableAutomaticCurrentScaling();
+    elevator_stepper_.setRunCurrent(50);
+    elevator_stepper_.enableCoolStep();
+    elevator_stepper_.enable();
 
     // Start the UART RX interrupt cycle.
     HAL_UART_Receive_IT(usb_uart_, &usb_rx_temp_, 1);
@@ -84,6 +99,10 @@ void Robot::recv_command(void) {
         }
         case 'h': {  // Check board health.
             recv_payload_and_execute<HealthCommand>();
+            break;
+        }
+        case 'e': {  // Step elevator.
+            recv_payload_and_execute<ElevatorCommand>();
             break;
         }
         default:
@@ -166,6 +185,24 @@ bool Robot::get_pullstart() {
 
 void Robot::set_pullstart(bool val) {
     pullstart_flag_.store(val, std::memory_order_release);
+}
+
+void Robot::delay_us(uint16_t us) {
+    __HAL_TIM_SET_COUNTER(us_timer_, 0);            // Reset counter to 0
+    while (__HAL_TIM_GET_COUNTER(us_timer_) < us)
+        // Wait until CNT reaches ‘us’
+        ;
+}
+
+void Robot::step_elevator(uint8_t steps, bool dir) {
+    if (get_interlock()) return;
+    HAL_GPIO_WritePin(elevator_dir_port_, elevator_step_pin_, dir ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    for (uint8_t i = 0; i < steps; ++i) {
+        HAL_GPIO_WritePin(elevator_step_port_, elevator_step_pin_, GPIO_PIN_SET);
+        delay_us(1);
+        HAL_GPIO_WritePin(elevator_step_port_, elevator_step_pin_, GPIO_PIN_RESET);
+        delay_us(1);
+    }
 }
 
 void Robot::rising_pin_callback(uint16_t pin) {

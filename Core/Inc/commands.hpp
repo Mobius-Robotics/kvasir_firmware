@@ -45,4 +45,12 @@ struct Status {
     bool interlock;
 };
 
+// Struct for 'e' command - Move elevator
+struct ElevatorCommand {
+    uint8_t steps;
+    bool dir;
+
+    void execute();
+};
+
 #pragma pack(pop)

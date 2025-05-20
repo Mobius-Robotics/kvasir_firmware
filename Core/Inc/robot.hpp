@@ -12,7 +12,13 @@
 
 class Robot {
 public:
-    void init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_uart, UART_HandleTypeDef *usb_uart, I2C_HandleTypeDef *i2c);
+    void init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_uart,
+            UART_HandleTypeDef *usb_uart, I2C_HandleTypeDef *i2c,
+
+            GPIO_TypeDef *elevator_step_port, uint16_t elevator_step_pin,
+            GPIO_TypeDef *elevator_dir_port, uint16_t elevator_dir_pin,
+            TIM_HandleTypeDef *us_timer
+            );
 
     void recv_command(void);
 
@@ -21,7 +27,15 @@ public:
     UART_HandleTypeDef *usb_uart_ = nullptr;
     I2C_HandleTypeDef *i2c_ = nullptr;
 
+    GPIO_TypeDef *elevator_step_port_;
+    uint16_t elevator_step_pin_;
+
+    GPIO_TypeDef *elevator_dir_port_;
+    uint16_t elevator_dir_pin_;
+    TIM_HandleTypeDef *us_timer_;
+
     TMC2209 wheel_steppers_[WHEEL_COUNT];
+    TMC2209 elevator_stepper_;
 
     RingBuffer usb_rx_buf_;
     uint8_t usb_rx_temp_;
@@ -38,13 +52,17 @@ public:
     bool get_pullstart();
     void set_pullstart(bool);
 
+    void step_elevator(uint8_t steps, bool dir);
+
     void rising_pin_callback(uint16_t pin);
     void falling_pin_callback(uint16_t pin);
+
+    void delay_us(uint16_t);
 private:
     template<typename T> void recv_payload_and_execute(void);
 
-    std::atomic<bool> interlock_flag_{false};
-    std::atomic<bool> pullstart_flag_{false};
+    std::atomic<bool> interlock_flag_ { false };
+    std::atomic<bool> pullstart_flag_ { false };
 };
 
 extern Robot robot;
