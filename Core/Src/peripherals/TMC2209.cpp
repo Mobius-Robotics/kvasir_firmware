@@ -634,7 +634,6 @@ void TMC2209::sendDatagramBidirectional(Datagram &datagram,
 		HAL_UART_Receive(huart_, &dummy, 1, 0);
 	}
 
-
 	// write datagram
     HAL_HalfDuplex_EnableTransmitter(huart_);
 	for (uint8_t i = 0; i < datagram_size; ++i) {
@@ -646,16 +645,7 @@ void TMC2209::sendDatagramBidirectional(Datagram &datagram,
 		}
 	}
 
-
-	// wait for bytes sent out on TX line to be echoed on RX line
-	uint8_t echo_buf[datagram_size];
-    HAL_HalfDuplex_EnableReceiver(huart_);
-	auto reply_status = HAL_UART_Receive(huart_, echo_buf, datagram_size,
-			ECHO_DELAY_MAX_MICROSECONDS / 1000);
-
-	if (reply_status != HAL_OK) {
-		return;
-	}
+	HAL_HalfDuplex_EnableReceiver(huart_);
 }
 
 void TMC2209::write(uint8_t register_address, uint32_t data) {

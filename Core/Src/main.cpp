@@ -542,7 +542,7 @@ static void MX_USART1_UART_Init(void) {
     huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
     huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
     huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-    if (HAL_UART_Init(&huart1) != HAL_OK) {
+    if (HAL_HalfDuplex_Init(&huart1) != HAL_OK) {
         Error_Handler();
     }
     if (HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK) {
@@ -585,7 +585,7 @@ static void MX_USART2_UART_Init(void) {
     huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
     huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
     huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-    if (HAL_UART_Init(&huart2) != HAL_OK) {
+    if (HAL_HalfDuplex_Init(&huart2) != HAL_OK) {
         Error_Handler();
     }
     if (HAL_UARTEx_SetTxFifoThreshold(&huart2, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK) {
@@ -642,11 +642,17 @@ static void MX_GPIO_Init(void) {
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : Finecorsa1_Pin Finecorsa2_Pin Emergency_Pin */
-    GPIO_InitStruct.Pin = Finecorsa1_Pin | Finecorsa2_Pin | Emergency_Pin;
+    /*Configure GPIO pins : Finecorsa1_Pin Finecorsa2_Pin */
+    GPIO_InitStruct.Pin = Finecorsa1_Pin | Finecorsa2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /*Configure GPIO pin : Emergency_Pin */
+    GPIO_InitStruct.Pin = Emergency_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    HAL_GPIO_Init(Emergency_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pin : Cordicella_Pin */
     GPIO_InitStruct.Pin = Cordicella_Pin;

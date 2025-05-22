@@ -35,6 +35,8 @@ void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_ua
         stepper.setRunCurrent(50);
         stepper.enableCoolStep();
         stepper.enable();
+
+        stepper.isSetupAndCommunicating();
     }
 
     elevator_stepper_.setup(elevator_uart_, 115200, static_cast<TMC2209::SerialAddress>(0));

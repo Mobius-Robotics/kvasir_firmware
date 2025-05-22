@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "constants.hpp"
+#include "peripherals/TMC2209.hpp"
 
 // Ensure structs are packed to avoid padding
 #pragma pack(push, 1)
@@ -40,6 +41,8 @@ struct HealthCommand  {
 struct Status {
     bool setupAndComms[WHEEL_COUNT];
     bool notSetupButComms[WHEEL_COUNT];
+    TMC2209::Status driverStatuses[WHEEL_COUNT];
+    TMC2209::GlobalStatus driverGlobalStatuses[WHEEL_COUNT];
 
     bool pullstart;
     bool interlock;

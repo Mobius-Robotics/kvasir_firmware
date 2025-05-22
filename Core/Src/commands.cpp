@@ -27,6 +27,8 @@ void HealthCommand::execute() {
     for (size_t i = 0; i < WHEEL_COUNT; ++i) {
         status.setupAndComms[i] = robot.wheel_steppers_[i].isSetupAndCommunicating();
         status.notSetupButComms[i] = robot.wheel_steppers_[i].isCommunicatingButNotSetup();
+        status.driverStatuses[i] = robot.wheel_steppers_[i].getStatus();
+        status.driverGlobalStatuses[i] = robot.wheel_steppers_[i].getGlobalStatus();
     }
 
     status.interlock = robot.get_interlock();
