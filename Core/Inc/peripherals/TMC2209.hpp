@@ -241,10 +241,10 @@ private:
   const static uint8_t BITS_PER_BYTE = 8;
 
   const static uint32_t ECHO_DELAY_INC_MICROSECONDS = 1;
-  const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 100000;
+  const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 500000;
 
   const static uint32_t REPLY_DELAY_INC_MICROSECONDS = 1;
-  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 100000;
+  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 500000;
 
   const static uint8_t STEPPER_DRIVER_FEATURE_OFF = 0;
   const static uint8_t STEPPER_DRIVER_FEATURE_ON = 1;

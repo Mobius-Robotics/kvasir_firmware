@@ -9,37 +9,25 @@ inline double rad_per_s_to_vactual(double u) {
     return vactual;
 }
 
-void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_uart,
-        UART_HandleTypeDef *usb_uart, I2C_HandleTypeDef *i2c, GPIO_TypeDef *elevator_step_port,
-        uint16_t elevator_step_pin,
-
-        GPIO_TypeDef *elevator_dir_port, uint16_t elevator_dir_pin, TIM_HandleTypeDef *us_timer) {
-    wheel_uart_ = wheel_uart;
-    elevator_uart_ = elevator_uart;
-    usb_uart_ = usb_uart;
-    i2c_ = i2c;
-
-    elevator_step_port_ = elevator_step_port;
-    elevator_step_pin_ = elevator_step_pin;
-    elevator_dir_port_ = elevator_dir_port;
-    elevator_dir_pin_ = elevator_dir_pin;
-    us_timer_ = us_timer;
+void Robot::init(const InitParams &params) {
+    usb_uart_ = params.usb_uart;
+    i2c_ = params.i2c;
+    us_timer_ = params.us_timer;
 
     HAL_Delay(200);
 
     // Initialize stepper drivers.
     for (size_t i = 0; i < WHEEL_COUNT; ++i) {
         auto &stepper = wheel_steppers_[i];
-        stepper.setup(wheel_uart_, 115200, static_cast<TMC2209::SerialAddress>(i));
+        stepper.setup(i < 2 ? params.wheel_uart0 : params.wheel_uart1, 115200,
+                static_cast<TMC2209::SerialAddress>(i));
         stepper.enableAutomaticCurrentScaling();
         stepper.setRunCurrent(50);
         stepper.enableCoolStep();
         stepper.enable();
-
-        stepper.isSetupAndCommunicating();
     }
 
-    elevator_stepper_.setup(elevator_uart_, 115200, static_cast<TMC2209::SerialAddress>(0));
+    elevator_stepper_.setup(params.elevator_uart, 115200, static_cast<TMC2209::SerialAddress>(0));
     elevator_stepper_.enableAutomaticCurrentScaling();
     elevator_stepper_.setRunCurrent(50);
     elevator_stepper_.enableCoolStep();
@@ -55,13 +43,13 @@ void Robot::init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_ua
     if (false) { /* Endstops aren't wired yet */
         uint16_t tim2_ccrs[TIM2_SERVOS];
         for (size_t i = 0; i < TIM2_SERVOS; ++i)
-            tim2_ccrs[i] = (TIM2->ARR + 1) / 4 * 3;
+            tim2_ccrs[i] = 1600;
         set_servo_tim2_ccrs(tim2_ccrs);
         while (HAL_GPIO_ReadPin(Finecorsa1_GPIO_Port, Finecorsa1_Pin) == GPIO_PIN_SET
                 && HAL_GPIO_ReadPin(Finecorsa2_GPIO_Port, Finecorsa2_Pin) == GPIO_PIN_SET) {
         }
         for (size_t i = 0; i < TIM2_SERVOS; ++i)
-            tim2_ccrs[i] = (TIM2->ARR + 1) / 2;
+            tim2_ccrs[i] = 1500;
         set_servo_tim2_ccrs(tim2_ccrs);
     }
 }
@@ -197,12 +185,12 @@ void Robot::delay_us(uint16_t us) {
 }
 
 void Robot::step_elevator(uint8_t steps, bool dir) {
-    if (get_interlock()) return;
-    HAL_GPIO_WritePin(elevator_dir_port_, elevator_step_pin_, dir ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(ElevatorDir_GPIO_Port, ElevatorDir_Pin, dir ? GPIO_PIN_SET : GPIO_PIN_RESET);
     for (uint8_t i = 0; i < steps; ++i) {
-        HAL_GPIO_WritePin(elevator_step_port_, elevator_step_pin_, GPIO_PIN_SET);
+        if (get_interlock()) return;
+        HAL_GPIO_WritePin(ElevatorStep_GPIO_Port, ElevatorStep_Pin, GPIO_PIN_SET);
         delay_us(1);
-        HAL_GPIO_WritePin(elevator_step_port_, elevator_step_pin_, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(ElevatorStep_GPIO_Port, ElevatorStep_Pin, GPIO_PIN_RESET);
         delay_us(1);
     }
 }

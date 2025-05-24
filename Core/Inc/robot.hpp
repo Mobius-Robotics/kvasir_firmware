@@ -12,26 +12,25 @@
 
 class Robot {
 public:
-    void init(UART_HandleTypeDef *wheel_uart, UART_HandleTypeDef *elevator_uart,
-            UART_HandleTypeDef *usb_uart, I2C_HandleTypeDef *i2c,
+    struct InitParams {
+        UART_HandleTypeDef *wheel_uart0;
+        UART_HandleTypeDef *wheel_uart1;
 
-            GPIO_TypeDef *elevator_step_port, uint16_t elevator_step_pin,
-            GPIO_TypeDef *elevator_dir_port, uint16_t elevator_dir_pin,
-            TIM_HandleTypeDef *us_timer
-            );
+        UART_HandleTypeDef *elevator_uart;
+        UART_HandleTypeDef *usb_uart;
+        I2C_HandleTypeDef *i2c;
+
+        TIM_HandleTypeDef *us_timer;
+    };
+
+    void init(const InitParams&);
 
     void recv_command(void);
 
-    UART_HandleTypeDef *wheel_uart_ = nullptr;
     UART_HandleTypeDef *elevator_uart_ = nullptr;
     UART_HandleTypeDef *usb_uart_ = nullptr;
     I2C_HandleTypeDef *i2c_ = nullptr;
 
-    GPIO_TypeDef *elevator_step_port_;
-    uint16_t elevator_step_pin_;
-
-    GPIO_TypeDef *elevator_dir_port_;
-    uint16_t elevator_dir_pin_;
     TIM_HandleTypeDef *us_timer_;
 
     TMC2209 wheel_steppers_[WHEEL_COUNT];

@@ -73,7 +73,7 @@ void Error_Handler(void);
 #define Cordicella_EXTI_IRQn EXTI15_IRQn
 #define ElevatorStep_Pin GPIO_PIN_8
 #define ElevatorStep_GPIO_Port GPIOA
-#define ElevatorDir_Pin GPIO_PIN_9
+#define ElevatorDir_Pin GPIO_PIN_10
 #define ElevatorDir_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
