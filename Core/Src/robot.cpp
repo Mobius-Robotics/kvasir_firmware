@@ -19,7 +19,7 @@ void Robot::init(const InitParams &params) {
     // Initialize stepper drivers.
     for (size_t i = 0; i < WHEEL_COUNT; ++i) {
         auto &stepper = wheel_steppers_[i];
-        stepper.setup(i < 2 ? params.wheel_uart0 : params.wheel_uart1, 115200,
+        stepper.setup(i < 2 ? params.wheel_uart0 : params.wheel_uart1,
                 static_cast<TMC2209::SerialAddress>(i));
         stepper.enableAutomaticCurrentScaling();
         stepper.setRunCurrent(50);
@@ -27,7 +27,7 @@ void Robot::init(const InitParams &params) {
         stepper.enable();
     }
 
-    elevator_stepper_.setup(params.elevator_uart, 115200, static_cast<TMC2209::SerialAddress>(0));
+    elevator_stepper_.setup(params.elevator_uart, static_cast<TMC2209::SerialAddress>(0));
     elevator_stepper_.enableAutomaticCurrentScaling();
     elevator_stepper_.setRunCurrent(50);
     elevator_stepper_.enableCoolStep();
