@@ -56,4 +56,24 @@ struct ElevatorCommand {
     void execute();
 };
 
+// Struct for 'T' command - Extend tin pusher
+struct ExtendPusherCommand {
+    void execute();
+};
+
+// Struct for 't' command - Retract tin pusher
+struct RetractPusherCommand {
+    void execute();
+};
+
+// Struct for 'i' command - Retract plank arm
+struct RetractArmCommand {
+    void execute();
+};
+
+// Struct for 'o' command - Extend plank arm
+struct ExtendArmCommand {
+    void execute();
+};
+
 #pragma pack(pop)

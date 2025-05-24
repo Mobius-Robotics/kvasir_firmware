@@ -40,17 +40,8 @@ void Robot::init(const InitParams &params) {
     set_interlock(HAL_GPIO_ReadPin(Emergency_GPIO_Port, Emergency_Pin) == GPIO_PIN_RESET);
 
     // Home TIM2 servos by moving outwards.
-    if (false) { /* Endstops aren't wired yet */
-        uint16_t tim2_ccrs[TIM2_SERVOS];
-        for (size_t i = 0; i < TIM2_SERVOS; ++i)
-            tim2_ccrs[i] = 1600;
-        set_servo_tim2_ccrs(tim2_ccrs);
-        while (HAL_GPIO_ReadPin(Finecorsa1_GPIO_Port, Finecorsa1_Pin) == GPIO_PIN_SET
-                && HAL_GPIO_ReadPin(Finecorsa2_GPIO_Port, Finecorsa2_Pin) == GPIO_PIN_SET) {
-        }
-        for (size_t i = 0; i < TIM2_SERVOS; ++i)
-            tim2_ccrs[i] = 1500;
-        set_servo_tim2_ccrs(tim2_ccrs);
+    if (HOME_ARM_SERVOS) {
+        retract_arm();
     }
 }
 
@@ -69,7 +60,6 @@ void Robot::recv_command(void) {
     }
 
     // Based on the opcode, choose the correct command type.
-    // NB: Those without a payload need to manually handle discarding their header and opcode.
     switch (opcode) {
         case 's': {  // Set servo CCRs.
             recv_payload_and_execute<SetServoCommand>();
@@ -93,6 +83,22 @@ void Robot::recv_command(void) {
         }
         case 'e': {  // Step elevator.
             recv_payload_and_execute<ElevatorCommand>();
+            break;
+        }
+        case 'T': {  // Extend tin pusher.
+            recv_payload_and_execute<ExtendPusherCommand>();
+            break;
+        }
+        case 't': {  // Retract tin pusher.
+            recv_payload_and_execute<RetractPusherCommand>();
+            break;
+        }
+        case 'o': {  // Extend plank arm.
+            recv_payload_and_execute<ExtendArmCommand>();
+            break;
+        }
+        case 'i': {  // Retract plank arm.
+            recv_payload_and_execute<RetractArmCommand>();
             break;
         }
         default:
@@ -160,7 +166,7 @@ void Robot::set_interlock(bool val) {
         int32_t speeds[WHEEL_COUNT] { };
         uint16_t tim2_ccrs[TIM2_SERVOS] { };
         for (size_t i = 0; i < TIM2_SERVOS; ++i)
-            tim2_ccrs[i] = (TIM2->ARR + 1) / 2;
+            tim2_ccrs[i] = ARM_SERVO_STOP_CCR;
         set_wheel_speeds(speeds);
         set_servo_tim2_ccrs(tim2_ccrs);
         set_pullstart(false);
@@ -193,6 +199,68 @@ void Robot::step_elevator(uint8_t steps, bool dir) {
         HAL_GPIO_WritePin(ElevatorStep_GPIO_Port, ElevatorStep_Pin, GPIO_PIN_RESET);
         delay_us(1);
     }
+}
+
+void Robot::retract_arm() {
+    uint16_t tim2_ccrs[TIM2_SERVOS];
+    for (size_t i = 0; i < TIM2_SERVOS; ++i)
+        tim2_ccrs[i] = ARM_SERVO_STOP_CCR;
+
+    // Retract right arm until we are not hitting the endstop anymore.
+    tim2_ccrs[0] = ARM_LEFT_SERVO_RETRACT_CCR;
+    while (HAL_GPIO_ReadPin(Finecorsa1_GPIO_Port, Finecorsa1_Pin) == GPIO_PIN_RESET) {
+        set_servo_tim2_ccrs(tim2_ccrs);
+    }
+    // Extend left arm until we are hitting the endstop.
+    tim2_ccrs[0] = ARM_LEFT_SERVO_EXTEND_CCR;
+    while (HAL_GPIO_ReadPin(Finecorsa1_GPIO_Port, Finecorsa1_Pin) == GPIO_PIN_SET) {
+        set_servo_tim2_ccrs(tim2_ccrs);
+    }
+    tim2_ccrs[0] = ARM_SERVO_STOP_CCR;
+    set_servo_tim2_ccrs(tim2_ccrs);
+
+    // Repeat for right arm.
+    tim2_ccrs[1] = ARM_RIGHT_SERVO_RETRACT_CCR;
+    while (HAL_GPIO_ReadPin(Finecorsa2_GPIO_Port, Finecorsa2_Pin) == GPIO_PIN_RESET) {
+        set_servo_tim2_ccrs(tim2_ccrs);
+
+    }
+    tim2_ccrs[1] = ARM_RIGHT_SERVO_EXTEND_CCR;
+    while (HAL_GPIO_ReadPin(Finecorsa2_GPIO_Port, Finecorsa2_Pin) == GPIO_PIN_SET) {
+        set_servo_tim2_ccrs(tim2_ccrs);
+    }
+    tim2_ccrs[1] = ARM_SERVO_STOP_CCR;
+    set_servo_tim2_ccrs(tim2_ccrs);
+}
+
+void Robot::extend_arm() {
+    retract_arm();
+    uint16_t tim2_ccrs[TIM2_SERVOS];
+    for (size_t i = 0; i < TIM2_SERVOS; ++i)
+        tim2_ccrs[i] = ARM_SERVO_STOP_CCR;
+
+    tim2_ccrs[0] = ARM_LEFT_SERVO_EXTEND_CCR;
+    tim2_ccrs[1] = ARM_RIGHT_SERVO_EXTEND_CCR;
+    set_servo_tim2_ccrs(tim2_ccrs);
+    HAL_Delay(ARM_EXTENSION_TIME_MS);
+
+    for (size_t i = 0; i < TIM2_SERVOS; ++i)
+        tim2_ccrs[i] = ARM_SERVO_STOP_CCR;
+    set_servo_tim2_ccrs(tim2_ccrs);
+}
+
+void Robot::extend_pusher() {
+    uint16_t tim1_ccrs[TIM1_SERVOS];
+    for (size_t i = 0; i < TIM1_SERVOS; ++i)
+        tim1_ccrs[i] = PUSHER_EXTEND_CCRS[i];
+    set_servo_tim1_ccrs(tim1_ccrs);
+}
+
+void Robot::retract_pusher() {
+    uint16_t tim1_ccrs[TIM1_SERVOS];
+    for (size_t i = 0; i < TIM1_SERVOS; ++i)
+        tim1_ccrs[i] = PUSHER_RETRACT_CCRS[i];
+    set_servo_tim1_ccrs(tim1_ccrs);
 }
 
 void Robot::rising_pin_callback(uint16_t pin) {

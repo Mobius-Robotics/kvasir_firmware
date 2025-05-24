@@ -53,6 +53,12 @@ public:
 
     void step_elevator(uint8_t steps, bool dir);
 
+    void extend_pusher();
+    void retract_pusher();
+
+    void extend_arm();
+    void retract_arm();
+
     void rising_pin_callback(uint16_t pin);
     void falling_pin_callback(uint16_t pin);
 

@@ -22,7 +22,7 @@ void PongCommand::execute() {
 }
 
 void HealthCommand::execute() {
-    Status status{};
+    Status status { };
 
     for (size_t i = 0; i < WHEEL_COUNT; ++i) {
         status.setupAndComms[i] = robot.wheel_steppers_[i].isSetupAndCommunicating();
@@ -40,4 +40,20 @@ void HealthCommand::execute() {
 
 void ElevatorCommand::execute() {
     robot.step_elevator(steps, dir);
+}
+
+void RetractArmCommand::execute() {
+    robot.retract_arm();
+}
+
+void ExtendArmCommand::execute() {
+    robot.extend_arm();
+}
+
+void RetractPusherCommand::execute() {
+    robot.retract_pusher();
+}
+
+void ExtendPusherCommand::execute() {
+    robot.extend_pusher();
 }
