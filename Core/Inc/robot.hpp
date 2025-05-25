@@ -34,7 +34,7 @@ public:
     TIM_HandleTypeDef *us_timer_;
 
     TMC2209 wheel_steppers_[WHEEL_COUNT];
-    TMC2209 elevator_stepper_;
+    TMC2209 elevator_steppers_[ELEVATOR_COUNT];
 
     RingBuffer usb_rx_buf_;
     uint8_t usb_rx_temp_;

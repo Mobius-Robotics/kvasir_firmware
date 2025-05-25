@@ -35,11 +35,14 @@ void Robot::init(const InitParams &params) {
         stepper.enable();
     }
 
-    elevator_stepper_.setup(params.elevator_uart, static_cast<TMC2209::SerialAddress>(0));
-    elevator_stepper_.enableAutomaticCurrentScaling();
-    elevator_stepper_.setRunCurrent(50);
-    elevator_stepper_.enableCoolStep();
-    elevator_stepper_.enable();
+    for (size_t i = 0; i < WHEEL_COUNT; ++i) {
+        auto &stepper = elevator_steppers_[i];
+        stepper.setup(params.elevator_uart, static_cast<TMC2209::SerialAddress>(i));
+        stepper.enableAutomaticCurrentScaling();
+        stepper.setRunCurrent(50);
+        stepper.enableCoolStep();
+        stepper.enable();
+    }
 
     // Start the UART RX interrupt cycle.
     HAL_UART_Receive_IT(usb_uart_, &usb_rx_temp_, 1);
