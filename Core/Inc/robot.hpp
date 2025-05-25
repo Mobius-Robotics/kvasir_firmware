@@ -56,6 +56,7 @@ public:
     void extend_pusher();
     void retract_pusher();
 
+    void home_arm();
     void extend_arm();
     void retract_arm();
 

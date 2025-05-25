@@ -41,7 +41,7 @@ void Robot::init(const InitParams &params) {
 
     // Home TIM2 servos by moving outwards.
     if (HOME_ARM_SERVOS) {
-        retract_arm();
+        home_arm();
     }
 }
 
@@ -201,7 +201,7 @@ void Robot::step_elevator(uint8_t steps, bool dir) {
     }
 }
 
-void Robot::retract_arm() {
+void Robot::home_arm() {
     uint16_t tim2_ccrs[TIM2_SERVOS];
     for (size_t i = 0; i < TIM2_SERVOS; ++i)
         tim2_ccrs[i] = ARM_SERVO_STOP_CCR;
@@ -233,8 +233,12 @@ void Robot::retract_arm() {
     set_servo_tim2_ccrs(tim2_ccrs);
 }
 
+void Robot::retract_arm() {
+    home_arm();
+}
+
 void Robot::extend_arm() {
-    retract_arm();
+    home_arm();
     uint16_t tim2_ccrs[TIM2_SERVOS];
     for (size_t i = 0; i < TIM2_SERVOS; ++i)
         tim2_ccrs[i] = ARM_SERVO_STOP_CCR;
