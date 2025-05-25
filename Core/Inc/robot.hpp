@@ -51,6 +51,7 @@ public:
     bool get_pullstart();
     void set_pullstart(bool);
 
+    void home_elevator();
     void step_elevator(uint8_t steps, bool dir);
 
     void extend_pusher(bool pushers[TIM1_SERVOS]);

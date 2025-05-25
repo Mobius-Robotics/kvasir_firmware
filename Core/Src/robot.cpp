@@ -1,4 +1,6 @@
 #include "robot.hpp"
+#include "peripherals/ssd1306.h"
+#include "peripherals/ssd1306_fonts.h"
 
 #include <type_traits>
 
@@ -15,6 +17,12 @@ void Robot::init(const InitParams &params) {
     us_timer_ = params.us_timer;
 
     HAL_Delay(200);
+
+    ssd1306_Init();
+    ssd1306_SetCursor(5, 5);
+    char msg[] = "Mobius!";
+    ssd1306_WriteString(msg, Font_6x8, White);
+    ssd1306_UpdateScreen();
 
     // Initialize stepper drivers.
     for (size_t i = 0; i < WHEEL_COUNT; ++i) {
@@ -188,6 +196,10 @@ void Robot::delay_us(uint16_t us) {
     while (__HAL_TIM_GET_COUNTER(us_timer_) < us)
         // Wait until CNT reaches ‘us’
         ;
+}
+
+void Robot::home_elevator() {
+
 }
 
 void Robot::step_elevator(uint8_t steps, bool dir) {
