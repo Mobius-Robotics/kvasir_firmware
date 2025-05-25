@@ -61,6 +61,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define ElevatorFinecorsa_Pin GPIO_PIN_2
+#define ElevatorFinecorsa_GPIO_Port GPIOB
 #define Finecorsa1_Pin GPIO_PIN_12
 #define Finecorsa1_GPIO_Port GPIOB
 #define Finecorsa2_Pin GPIO_PIN_13

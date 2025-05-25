@@ -235,6 +235,18 @@ void Robot::home_arm() {
 
 void Robot::retract_arm() {
     home_arm();
+    uint16_t tim2_ccrs[TIM2_SERVOS];
+    for (size_t i = 0; i < TIM2_SERVOS; ++i)
+        tim2_ccrs[i] = ARM_SERVO_STOP_CCR;
+
+    tim2_ccrs[0] = ARM_LEFT_SERVO_RETRACT_CCR;
+    tim2_ccrs[1] = ARM_RIGHT_SERVO_RETRACT_CCR;
+    set_servo_tim2_ccrs(tim2_ccrs);
+    HAL_Delay(ARM_RETRACTION_TIME_MS);
+
+    for (size_t i = 0; i < TIM2_SERVOS; ++i)
+        tim2_ccrs[i] = ARM_SERVO_STOP_CCR;
+    set_servo_tim2_ccrs(tim2_ccrs);
 }
 
 void Robot::extend_arm() {
@@ -253,10 +265,10 @@ void Robot::extend_arm() {
     set_servo_tim2_ccrs(tim2_ccrs);
 }
 
-void Robot::extend_pusher() {
+void Robot::extend_pusher(bool pushers[TIM1_SERVOS]) {
     uint16_t tim1_ccrs[TIM1_SERVOS];
     for (size_t i = 0; i < TIM1_SERVOS; ++i)
-        tim1_ccrs[i] = PUSHER_EXTEND_CCRS[i];
+        tim1_ccrs[i] = pushers[i] ? PUSHER_EXTEND_CCRS[i] : PUSHER_RETRACT_CCRS[i];
     set_servo_tim1_ccrs(tim1_ccrs);
 }
 

@@ -55,5 +55,5 @@ void RetractPusherCommand::execute() {
 }
 
 void ExtendPusherCommand::execute() {
-    robot.extend_pusher();
+    robot.extend_pusher(pushers);
 }

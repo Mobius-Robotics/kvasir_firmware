@@ -53,7 +53,7 @@ public:
 
     void step_elevator(uint8_t steps, bool dir);
 
-    void extend_pusher();
+    void extend_pusher(bool pushers[TIM1_SERVOS]);
     void retract_pusher();
 
     void home_arm();

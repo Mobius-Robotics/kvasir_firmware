@@ -58,6 +58,8 @@ struct ElevatorCommand {
 
 // Struct for 'T' command - Extend tin pusher
 struct ExtendPusherCommand {
+    bool pushers[TIM1_SERVOS];
+
     void execute();
 };
 

@@ -23,7 +23,9 @@ constexpr uint16_t ARM_RIGHT_SERVO_RETRACT_CCR = 1600;
 
 constexpr bool HOME_ARM_SERVOS = false;
 
-constexpr uint32_t ARM_EXTENSION_TIME_MS = 500;
+constexpr uint32_t ARM_EXTENSION_TIME_MS = 250;
+constexpr uint32_t ARM_RETRACTION_TIME_MS = 250;
+
 
 constexpr uint16_t PUSHER_EXTEND_CCRS[TIM1_SERVOS] = {1750, 1600, 1600, 1600};
 constexpr uint16_t PUSHER_RETRACT_CCRS[TIM1_SERVOS] = {1210, 1175, 1260, 1230};
