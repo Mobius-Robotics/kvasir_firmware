@@ -24,22 +24,18 @@ void PongCommand::execute() {
 void HealthCommand::execute() {
     Status status { };
 
-    for (size_t i = 0; i < WHEEL_COUNT; ++i) {
-        status.setupAndComms[i] = robot.wheel_steppers_[i].isSetupAndCommunicating();
-        status.notSetupButComms[i] = robot.wheel_steppers_[i].isCommunicatingButNotSetup();
-        status.driverStatuses[i] = robot.wheel_steppers_[i].getStatus();
-        status.driverGlobalStatuses[i] = robot.wheel_steppers_[i].getGlobalStatus();
-    }
-
     status.interlock = robot.get_interlock();
     status.pullstart = robot.get_pullstart();
+
+    status.endstops[0] = HAL_GPIO_ReadPin(Finecorsa1_GPIO_Port, Finecorsa1_Pin) == GPIO_PIN_SET;
+    status.endstops[1] = HAL_GPIO_ReadPin(Finecorsa2_GPIO_Port, Finecorsa2_Pin) == GPIO_PIN_SET;
 
     HAL_UART_Transmit(robot.usb_uart_, reinterpret_cast<const uint8_t*>(&status), sizeof(Status),
             100);
 }
 
 void ElevatorCommand::execute() {
-    robot.step_elevator(steps, dir);
+    robot.move_elevator(position);
 }
 
 void RetractArmCommand::execute() {

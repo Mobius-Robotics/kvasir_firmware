@@ -39,19 +39,15 @@ struct HealthCommand  {
 };
 
 struct Status {
-    bool setupAndComms[WHEEL_COUNT];
-    bool notSetupButComms[WHEEL_COUNT];
-    TMC2209::Status driverStatuses[WHEEL_COUNT];
-    TMC2209::GlobalStatus driverGlobalStatuses[WHEEL_COUNT];
-
     bool pullstart;
     bool interlock;
+
+    bool endstops[2];
 };
 
 // Struct for 'e' command - Move elevator
 struct ElevatorCommand {
-    uint8_t steps;
-    bool dir;
+    uint16_t position;
 
     void execute();
 };

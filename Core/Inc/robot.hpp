@@ -13,28 +13,18 @@
 class Robot {
 public:
     struct InitParams {
-        UART_HandleTypeDef *wheel_uart0;
-        UART_HandleTypeDef *wheel_uart1;
-
-        UART_HandleTypeDef *elevator_uart;
+        UART_HandleTypeDef *pico_uart;
         UART_HandleTypeDef *usb_uart;
         I2C_HandleTypeDef *i2c;
-
-        TIM_HandleTypeDef *us_timer;
     };
 
     void init(const InitParams&);
 
     void recv_command(void);
 
-    UART_HandleTypeDef *elevator_uart_ = nullptr;
+    UART_HandleTypeDef *pico_uart_ = nullptr;
     UART_HandleTypeDef *usb_uart_ = nullptr;
     I2C_HandleTypeDef *i2c_ = nullptr;
-
-    TIM_HandleTypeDef *us_timer_;
-
-    TMC2209 wheel_steppers_[WHEEL_COUNT];
-    TMC2209 elevator_steppers_[ELEVATOR_COUNT];
 
     RingBuffer usb_rx_buf_;
     uint8_t usb_rx_temp_;
@@ -51,8 +41,7 @@ public:
     bool get_pullstart();
     void set_pullstart(bool);
 
-    void home_elevator();
-    void step_elevator(uint8_t steps, bool dir);
+    void move_elevator(int16_t position);
 
     void extend_pusher(bool pushers[TIM1_SERVOS]);
     void retract_pusher();
@@ -60,6 +49,8 @@ public:
     void home_arm();
     void extend_arm();
     void retract_arm();
+
+    void update_screen();
 
     void rising_pin_callback(uint16_t pin);
     void falling_pin_callback(uint16_t pin);
